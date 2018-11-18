@@ -19,5 +19,9 @@ export class AuthService {
         }
         this._userManager = new UserManager(config);
      }
+
+     login(): Promise<any> {
+         return this._userManager.signinRedirect();
+     }
     
 }
