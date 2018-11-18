@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
-import { UserManager, User } from 'oidc-client';
+import { UserManager, User, WebStorageStateStore } from 'oidc-client';
 import { Constants } from '../constants';
 
 @Injectable()
@@ -15,7 +15,8 @@ export class AuthService {
             redirect_uri: `${Constants.clientRoot}assets/oidc-login-redirect.html`,
             scope: 'openid projects-api profile',
             response_type: 'id_token token',
-            post_logout_redirect_uri: `${Constants.clientRoot}`
+            post_logout_redirect_uri: `${Constants.clientRoot}`,
+            userStore: new WebStorageStateStore({ store: window.localStorage })
         }
         this._userManager = new UserManager(config);
      }
