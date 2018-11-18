@@ -127,6 +127,8 @@ namespace SecuringAngularApps.API.Controllers
             {
                 return NotFound();
             }
+            var ups = _context.UserPermissions.Where(up => up.ProjectId == id).ToList();
+            ups.ForEach(u => _context.UserPermissions.Remove(u));
 
             _context.Projects.Remove(project);
             await _context.SaveChangesAsync();

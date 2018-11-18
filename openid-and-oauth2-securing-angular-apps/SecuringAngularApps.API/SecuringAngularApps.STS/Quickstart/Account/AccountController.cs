@@ -84,7 +84,7 @@ namespace IdentityServer4.Quickstart.UI
                     // denied the consent (even if this client does not require consent).
                     // this will send back an access denied OIDC error response to the client.
                     await _interaction.GrantConsentAsync(context, ConsentResponse.Denied);
-
+                    
                     // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
                     return Redirect(model.ReturnUrl);
                 }
@@ -254,14 +254,8 @@ namespace IdentityServer4.Quickstart.UI
                 return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
             }
 
-            if (string.IsNullOrWhiteSpace(vm.PostLogoutRedirectUri))
-            {
-                return View("LoggedOut", vm);
-            }
-            else
-            {
-                return Redirect(vm.PostLogoutRedirectUri);
-            }
+            //return View("LoggedOut", vm);
+            return Redirect(vm.PostLogoutRedirectUri);
         }
 
         /*****************************************/
@@ -436,7 +430,7 @@ namespace IdentityServer4.Quickstart.UI
             }
         }
 
-        private async Task<(ApplicationUser user, string provider, string providerUserId, IEnumerable<Claim> claims)>
+        private async Task<(ApplicationUser user, string provider, string providerUserId, IEnumerable<Claim> claims)> 
             FindUserFromExternalProviderAsync(AuthenticateResult result)
         {
             var externalUser = result.Principal;

@@ -3,8 +3,6 @@ import { AccountService } from './core/account.service';
 import { UserProfile } from './model/user-profile';
 import { MatDialog } from '@angular/material';
 import { Utils } from './core/utils';
-import { AuthService } from './core/auth.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -16,32 +14,9 @@ export class AppComponent implements OnInit {
   firstLogin = false;
   constructor(
     private _acctService: AccountService,
-    public dialog: MatDialog,
-    private _authService: AuthService,
-    private _router: Router
+    public dialog: MatDialog
   ) {}
 
   ngOnInit() {
-    if (window.location.href.indexOf('?postLogout=true') > 0) {
-      this._authService.signoutRedirectCallback().then(() => {
-        let url: string = this._router.url.substring(
-          0,
-          this._router.url.indexOf('?')
-        );
-        this._router.navigateByUrl(url);
-      });
-    }
-  }
-
-  login() {
-    this._authService.login();
-  }
-
-  logout() {
-    this._authService.logout();
-  }
-
-  isLoggedIn() {
-    return this._authService.isLoggedIn();
   }
 }
