@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,16 @@ namespace SecuringAngularApps.API
                     .AllowCredentials();
                 });
             });
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    // base-address of your identityserver
+                    options.Authority = "http://localhost:4242/";
+                    options.RequireHttpsMetadata = false;
+                    // name of the API resource
+                    options.Audience = "projects-api";
+                });
             services.AddMvc();
         }
 
@@ -44,6 +55,7 @@ namespace SecuringAngularApps.API
                 app.UseDeveloperExceptionPage();
             }
             app.UseCors("AllRequests");
+            app.UseAuthentication();
             app.UseMvc();
         }
     }
