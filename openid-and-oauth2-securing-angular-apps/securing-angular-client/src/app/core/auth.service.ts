@@ -12,7 +12,7 @@ export class AuthService {
     constructor(private httpClient: HttpClient) {
         var config = {
             authority: Constants.stsAuthority,
-            client_id: 'spa-client',
+            client_id: Constants.clientId,
             redirect_uri: `${Constants.clientRoot}assets/oidc-login-redirect.html`,
             scope: 'openid projects-api profile',
             response_type: 'id_token token',
