@@ -26,8 +26,8 @@ namespace SecuringAngularApps.STS{
                     RequireConsent = false,
 
                     RedirectUris =           { "http://localhost:4200/assets/oidc-login-redirect.html" },
-                    PostLogoutRedirectUris = { "http://localhost:4200" },
-                    AllowedCorsOrigins =     { "http://localhost:4200" },
+                    PostLogoutRedirectUris = { "http://localhost:4200/?postLogout=true" },
+                    AllowedCorsOrigins =     { "http://localhost:4200/" },
 
                     AllowedScopes =
                     {
