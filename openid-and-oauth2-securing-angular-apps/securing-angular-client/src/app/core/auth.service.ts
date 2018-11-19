@@ -17,7 +17,13 @@ export class AuthService {
             scope: 'openid projects-api profile',
             response_type: 'id_token token',
             post_logout_redirect_uri: `${Constants.clientRoot}?postLogout=true`,
-            userStore: new WebStorageStateStore({ store: window.localStorage })
+            userStore: new WebStorageStateStore({ store: window.localStorage }),
+            metadata: {
+                authorization_endpoint: `${Constants.stsAuthority}authorize?audience=projects-api`,
+                issuer: `${Constants.stsAuthority}`,
+                jwks_uri: `${Constants.stsAuthority}.well-known/jwks.json`,
+                end_session_endpoint: `${Constants.stsAuthority}v2/logout?returnTo=${Constants.clientRoot}?postLogout=true`
+            }
         }
         this._userManager = new UserManager(config);
         this._userManager.getUser().then(user => {
