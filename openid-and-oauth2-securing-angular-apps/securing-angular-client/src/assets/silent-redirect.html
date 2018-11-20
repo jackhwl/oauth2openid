@@ -3,7 +3,7 @@
   var config = {
     userStore: new Oidc.WebStorageStateStore({ store: window.localStorage })
   };
-  new Oidc.UserManager(config).signinRedirectCallback()
+  new Oidc.UserManager(config).signinSilentCallback()
         .catch((error) => {
                 console.error(error);
             });
