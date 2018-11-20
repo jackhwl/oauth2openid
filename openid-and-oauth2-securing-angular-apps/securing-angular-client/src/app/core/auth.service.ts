@@ -35,6 +35,12 @@ export class AuthService {
                 this._user = user;
             }
         });
+        this._userManager.events.addUserLoaded(()=>{
+            this._userManager.getUser().then(user => {
+                console.log('new user loaded=======');
+                this._user = user;
+            });
+        });
      }
 
      login(): Promise<any> {
