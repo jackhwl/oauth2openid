@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using IdentityServer4.Services;
+using SecuringAngularApps.STS.Quickstart.Account;
 
 namespace SecuringAngularApps.STS
 {
@@ -45,6 +46,8 @@ namespace SecuringAngularApps.STS
                 });
             });
 
+            services.AddTransient<IProfileService, CustomProfileService>();
+
             services.AddMvc();
 
             var builder = services.AddIdentityServer(options =>
@@ -57,7 +60,9 @@ namespace SecuringAngularApps.STS
                 .AddInMemoryIdentityResources(Config.GetIdentityResources())
                 .AddInMemoryApiResources(Config.GetApiResources())
                 .AddInMemoryClients(Config.GetClients())
-                .AddAspNetIdentity<ApplicationUser>();
+                .AddAspNetIdentity<ApplicationUser>()
+                .AddProfileService<CustomProfileService>();
+                ;
 
 
             if (Environment.IsDevelopment())

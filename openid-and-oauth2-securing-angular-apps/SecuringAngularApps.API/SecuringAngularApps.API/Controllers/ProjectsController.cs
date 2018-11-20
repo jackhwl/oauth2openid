@@ -27,12 +27,19 @@ namespace SecuringAngularApps.API.Controllers
         [HttpGet]
         public IEnumerable<Project> GetProjects()
         {
-            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            List<int> userProjectIds = _context.UserPermissions
-                .Where(up => up.ProjectId.HasValue && up.UserProfileId == userId)
-                .Select(up => up.ProjectId.Value)
-                .ToList();
-            return _context.Projects.Where(p=>userProjectIds.Contains(p.Id));
+            if (User.IsInRole("Admin"))
+            {
+                return _context.Projects;
+            }
+            else
+            {
+                var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                List<int> userProjectIds = _context.UserPermissions
+                    .Where(up => up.ProjectId.HasValue && up.UserProfileId == userId)
+                    .Select(up => up.ProjectId.Value)
+                    .ToList();
+                return _context.Projects.Where(p=>userProjectIds.Contains(p.Id));
+            }
         }
 
         // GET: api/Projects/5
@@ -60,6 +67,7 @@ namespace SecuringAngularApps.API.Controllers
         }
 
         [HttpGet("{id}/Users")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetProjectUsers([FromRoute] int id)
         {
             var perms = _context.UserPermissions.Where(up => up.ProjectId == id).ToList();
@@ -110,6 +118,7 @@ namespace SecuringAngularApps.API.Controllers
 
         // POST: api/Projects
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PostProject([FromBody] Project project)
         {
             if (!ModelState.IsValid)
@@ -125,6 +134,7 @@ namespace SecuringAngularApps.API.Controllers
 
         // DELETE: api/Projects/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteProject([FromRoute] int id)
         {
             if (!ModelState.IsValid)
