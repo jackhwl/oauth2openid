@@ -1,0 +1,10 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/oidc-client/1.4.1/oidc-client.min.js"></script>
+<script>
+  var config = {
+    userStore: new Oidc.WebStorageStateStore({ store: window.localStorage })
+  };
+  new Oidc.UserManager(config).signinRedirectCallback()
+        .catch((error) => {
+                console.error(error);
+            });
+</script>

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
-import { UserManager, User, WebStorageStateStore } from 'oidc-client';
+import { UserManager, User, WebStorageStateStore, Log } from 'oidc-client';
 import { Constants } from '../constants';
 
 @Injectable()
@@ -10,6 +10,7 @@ export class AuthService {
     private _user: User;
 
     constructor(private httpClient: HttpClient) {
+        Log.logger = console;
         var config = {
             authority: Constants.stsAuthority,
             client_id: Constants.clientId,
@@ -18,13 +19,16 @@ export class AuthService {
             response_type: 'id_token token',
             post_logout_redirect_uri: `${Constants.clientRoot}?postLogout=true`,
             userStore: new WebStorageStateStore({ store: window.localStorage }),
-            // metadata: {
-            //     authorization_endpoint: `${Constants.stsAuthority}authorize?audience=projects-api`,
-            //     issuer: `${Constants.stsAuthority}`,
-            //     jwks_uri: `${Constants.stsAuthority}.well-known/jwks.json`,
-            //     end_session_endpoint: `${Constants.stsAuthority}v2/logout?returnTo=${Constants.clientRoot}?postLogout=true`
-            // }
-        }
+            automaticSilentRenew: true,
+            silent_redirect_uri: `${Constants.clientRoot}assets/silent-redirect.html`
+        };
+        // metadata: {
+        //     authorization_endpoint: `${Constants.stsAuthority}authorize?audience=projects-api`,
+        //     issuer: `${Constants.stsAuthority}`,
+        //     jwks_uri: `${Constants.stsAuthority}.well-known/jwks.json`,
+        //     end_session_endpoint: `${Constants.stsAuthority}v2/logout?returnTo=${Constants.clientRoot}?postLogout=true`
+        // }
+
         this._userManager = new UserManager(config);
         this._userManager.getUser().then(user => {
             if (user && !user.expired){
