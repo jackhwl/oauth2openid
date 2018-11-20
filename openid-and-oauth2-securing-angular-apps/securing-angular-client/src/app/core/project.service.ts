@@ -9,16 +9,13 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { UserPermission } from '../model/user-permission';
 import { UserProfile } from '../model/user-profile';
 import { MilestoneStatus } from '../model/milestone-status';
-import { AuthService } from './auth.service';
 
 @Injectable()
 export class ProjectService {
-    constructor(private httpClient: HttpClient, private _authService: AuthService) { }
+    constructor(private httpClient: HttpClient) { }
     
     getProjects(): Observable<Project[]> {
-        var accessToken = this._authService.getAccessToken();
-        var headers = new HttpHeaders().set('Authorization', `Bearer ${accessToken}`);
-        return this.httpClient.get<Project[]>(Constants.apiRoot + 'Projects', { headers });
+        return this.httpClient.get<Project[]>(Constants.apiRoot + 'Projects');
     }
 
     getProject(projectId: number): Observable<Project> {
