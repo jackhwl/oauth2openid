@@ -10,6 +10,8 @@ import { Milestone } from '../model/milestone';
 import { MilestoneStatus } from '../model/milestone-status';
 import { Project } from '../model/project';
 import { AddEditMilestoneDialogComponent } from './add-edit-milestone-dialog.component';
+import { AuthService } from '../core/auth.service';
+import { UserPermission } from '../model/user-permission';
 
 @Component({
   selector: 'app-project',
@@ -28,7 +30,8 @@ export class ProjectComponent implements OnInit {
     private _route: ActivatedRoute,
     private _projectService: ProjectService,
     private _acctService: AccountService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    public authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -102,5 +105,21 @@ export class ProjectComponent implements OnInit {
       if (!this.milestoneStatuses) return '';
       var status = this.milestoneStatuses.find(ms => ms.id == id);
       return status ? status.name : 'unknown';
+  }
+
+  canEditProject(): boolean {
+    if (!this.project || 
+      !this.authService.authContext || 
+      !this.authService.authContext.userProfile ||
+      !this.authService.authContext.userProfile.userPermissions 
+    ) return false;
+    const editPerm = this.authService.authContext.userProfile.userPermissions.find(
+      up=> up.projectId === this.project.id && up.value === 'Edit'
+    );
+    const isAdmin = this.authService.authContext.claims && 
+     !!this.authService.authContext.claims.find(c=> 
+      c.type === 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role' && 
+      c.value === 'Admin');
+    return !!editPerm || isAdmin;
   }
 }

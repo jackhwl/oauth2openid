@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using SecuringAngularApps.API.Model;
 
 namespace SecuringAngularApps.API.Controllers
@@ -194,6 +195,7 @@ namespace SecuringAngularApps.API.Controllers
 
         private async Task<bool> MilestoneAccessCheck(Milestone item)
         {
+            if (User.IsInRole("Admin")) return true;
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var perm = await _context.UserPermissions.FirstOrDefaultAsync(up =>
                 up.ProjectId == item.ProjectId && up.UserProfileId == userId);
@@ -202,6 +204,7 @@ namespace SecuringAngularApps.API.Controllers
 
         private async Task<bool> ProjectEditAccessCheck(int projectId, bool edit)
         {
+            if (User.IsInRole("Admin")) return true;
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userAccess = await _context.UserPermissions.FirstOrDefaultAsync(up =>
                 up.ProjectId == projectId && up.UserProfileId == userId);
