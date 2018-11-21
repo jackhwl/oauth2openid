@@ -14,7 +14,6 @@ namespace SecuringAngularApps.API.Controllers
 {
     [Produces("application/json")]
     [Route("api/Account")]
-    [Authorize(Roles = "Admin")]
     public class AccountController : Controller
     {
         private readonly ProjectDbContext _context;
@@ -25,6 +24,7 @@ namespace SecuringAngularApps.API.Controllers
         }
 
         [HttpGet("Users")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetAllUsers()
         {
             var admins = _context.UserPermissions.Where(up => up.Value == "Admin").Select(up => up.UserProfileId).ToList();
@@ -32,7 +32,27 @@ namespace SecuringAngularApps.API.Controllers
             return Ok(users);
         }
 
+        [HttpGet("AuthContext")]
+        [Authorize]
+        public AuthContext GetAuthContext()
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var profile = _context.UserProfiles.Include("UserPermissions")
+                .FirstOrDefault(u => u.Id == userId);
+            if (profile == null) return null;
+            return new AuthContext
+            {
+                UserProfile = profile,
+                Claims = User.Claims.Select(c => new SimpleClaim
+                {
+                    Type = c.Type,
+                    Value = c.Value
+                }).ToList()
+            };
+        }
+
         [HttpPost("Profile")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateUserProfile([FromBody] UserProfile userProfile)
         {
             var existing = _context.UserProfiles.FirstOrDefault(up => up.Email == userProfile.Email);
@@ -44,6 +64,7 @@ namespace SecuringAngularApps.API.Controllers
         }
 
         [HttpPut("Profile/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUserProfile([FromBody] UserProfile userProfile, string id)
         {
             if (userProfile.Id != id) return BadRequest();
@@ -58,6 +79,7 @@ namespace SecuringAngularApps.API.Controllers
 
         [HttpPost("ContactUs")]
         [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         public IActionResult ContactUs(string email, string subject, string message)
         {
             return Ok();

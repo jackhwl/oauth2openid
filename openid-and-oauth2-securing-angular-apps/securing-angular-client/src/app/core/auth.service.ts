@@ -3,11 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { UserManager, User, WebStorageStateStore, Log } from 'oidc-client';
 import { Constants } from '../constants';
+import { AuthContext } from '../model/auth-context';
+import { Utils } from './utils';
 
 @Injectable()
 export class AuthService {
     private _userManager: UserManager;
     private _user: User;
+    authContext: AuthContext;
 
     constructor(private httpClient: HttpClient) {
         Log.logger = console;
@@ -33,12 +36,14 @@ export class AuthService {
         this._userManager.getUser().then(user => {
             if (user && !user.expired){
                 this._user = user;
+                this.loadSecurityContext();
             }
         });
         this._userManager.events.addUserLoaded(()=>{
             this._userManager.getUser().then(user => {
                 console.log('new user loaded=======');
                 this._user = user;
+                this.loadSecurityContext();
             });
         });
      }
@@ -61,5 +66,12 @@ export class AuthService {
 
     signoutRedirectCallback(): Promise<any> {
         return this._userManager.signoutRedirectCallback();
+    }
+
+    loadSecurityContext() {
+        this.httpClient.get<AuthContext>(`${Constants.apiRoot}Account/AuthContext`).subscribe(context => {
+            this.authContext = context;
+            console.log('context=', context);
+        }, error => console.error(Utils.formatError(error)));
     }
 }
